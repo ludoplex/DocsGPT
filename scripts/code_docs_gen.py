@@ -57,14 +57,10 @@ if not Path("outputs").exists():
     Path("outputs").mkdir()
 
 c1 = len(structure_dict)
-c2 = 0
-for source, classes in structure_dict.items():
-    c2 += 1
+for c2, (source, classes) in enumerate(structure_dict.items(), start=1):
     print(f"Processing file {c2}/{c1}")
     f1 = len(classes)
-    f2 = 0
-    for class_name, functions in classes.items():
-        f2 += 1
+    for f2, (class_name, functions) in enumerate(classes.items(), start=1):
         print(f"Processing class {f2}/{f1}")
         source_w = source.replace("inputs/", "")
         source_w = source_w.replace(".py", ".txt")

@@ -41,8 +41,7 @@ class MarkdownParser(BaseParser):
         num_tokens = len(tiktoken.get_encoding("cl100k_base").encode(current_text))
         if num_tokens > self._max_tokens:
             chunks = [current_text[i:i + self._max_tokens] for i in range(0, len(current_text), self._max_tokens)]
-            for chunk in chunks:
-                tups.append((current_header, chunk))
+            tups.extend((current_header, chunk) for chunk in chunks)
         else:
             tups.append((current_header, current_text))
         return tups
@@ -60,10 +59,9 @@ class MarkdownParser(BaseParser):
         current_text = ""
 
         for line in lines:
-            header_match = re.match(r"^#+\s", line)
-            if header_match:
+            if header_match := re.match(r"^#+\s", line):
                 if current_header is not None:
-                    if current_text == "" or None:
+                    if current_text == "":
                         continue
                     markdown_tups = self.tups_chunk_append(markdown_tups, current_header, current_text)
 
@@ -89,8 +87,7 @@ class MarkdownParser(BaseParser):
     def remove_images(self, content: str) -> str:
         """Get a dictionary of a markdown file from its path."""
         pattern = r"!{1}\[\[(.*)\]\]"
-        content = re.sub(pattern, "", content)
-        return content
+        return re.sub(pattern, "", content)
 
     # def remove_tables(self, content: str) -> List[List[str]]:
     #     """Convert markdown tables to nested lists."""
@@ -108,8 +105,7 @@ class MarkdownParser(BaseParser):
     def remove_hyperlinks(self, content: str) -> str:
         """Get a dictionary of a markdown file from its path."""
         pattern = r"\[(.*?)\]\((.*?)\)"
-        content = re.sub(pattern, r"\1", content)
-        return content
+        return re.sub(pattern, r"\1", content)
 
     def _init_parser(self) -> Dict:
         """Initialize the parser with the config."""
@@ -125,10 +121,7 @@ class MarkdownParser(BaseParser):
             content = self.remove_hyperlinks(content)
         if self._remove_images:
             content = self.remove_images(content)
-        # if self._remove_tables:
-        #     content = self.remove_tables(content)
-        markdown_tups = self.markdown_to_tups(content)
-        return markdown_tups
+        return self.markdown_to_tups(content)
 
     def parse_file(
             self, filepath: Path, errors: str = "ignore"

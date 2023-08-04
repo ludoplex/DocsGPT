@@ -71,9 +71,7 @@ def get_user_permission():
     print(f"Approx Cost = ${format(total_price, ',.2f')}")
     # Here we check for user permission before calling the API.
     user_input = input("Price Okay? (Y/N) \n").lower()
-    if user_input == "y":
-        call_openai_api()
-    elif user_input == "":
+    if user_input in ["y", ""]:
         call_openai_api()
     else:
         print("The API was not called. No money was spent.")
@@ -96,7 +94,7 @@ dst_dir = "tmp"
 convert_rst_to_txt(src_dir, dst_dir)
 
 # Here we load in the data in the format that Notion exports it in.
-ps = list(Path("tmp/" + src_dir).glob("**/*.txt"))
+ps = list(Path(f"tmp/{src_dir}").glob("**/*.txt"))
 
 # parse all child directories
 data = []

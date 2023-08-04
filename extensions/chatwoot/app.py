@@ -69,20 +69,11 @@ def docsgpt():
 
     if label_stop in data['conversation']['labels']:
         return "Label stop"
-    # elif str(account) != str(account_id):
-    #     return "Not the right account"
-
-    # elif str(assignee) != str(assignee_id):
-    #     return "Not the right assignee"
-
-    if (message_type == "incoming"):
-        bot_response = send_to_bot(contact, message)
-        create_message = send_to_chatwoot(
-            account, conversation, bot_response)
-    else:
+    if message_type != "incoming":
         return "Not an incoming message"
 
-    return create_message
+    bot_response = send_to_bot(contact, message)
+    return send_to_chatwoot(account, conversation, bot_response)
 
 
 if __name__ == '__main__':

@@ -114,7 +114,7 @@ class SimpleDirectoryReader(BaseReader):
             new_input_files.extend(sub_input_files)
 
         if self.num_files_limit is not None and self.num_files_limit > 0:
-            new_input_files = new_input_files[0: self.num_files_limit]
+            new_input_files = new_input_files[:self.num_files_limit]
 
         # print total number of files added
         logging.debug(
@@ -151,14 +151,16 @@ class SimpleDirectoryReader(BaseReader):
             if isinstance(data, List):
                 data_list.extend(data)
                 if self.file_metadata is not None:
-                    for _ in range(len(data)):
-                        metadata_list.append(self.file_metadata(str(input_file)))
+                    metadata_list.extend(
+                        self.file_metadata(str(input_file))
+                        for _ in range(len(data))
+                    )
             else:
                 data_list.append(str(data))
                 if self.file_metadata is not None:
                     metadata_list.append(self.file_metadata(str(input_file)))
 
-            
+
 
         if concatenate:
             return [Document("\n".join(data_list))]

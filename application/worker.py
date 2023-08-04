@@ -40,7 +40,7 @@ def ingest_worker(self, directory, formats, name_job, filename, user):
     token_check = True
     min_tokens = 150
     max_tokens = 1250
-    full_path = directory + '/' + user + '/' + name_job
+    full_path = f'{directory}/{user}/{name_job}'
     # check if API_URL env variable is set
     file_data = {'name': name_job, 'file': filename, 'user': user}
     response = requests.get(urljoin(settings.API_URL, "/api/download"), params=file_data)
@@ -48,14 +48,14 @@ def ingest_worker(self, directory, formats, name_job, filename, user):
 
     if not os.path.exists(full_path):
         os.makedirs(full_path)
-    with open(full_path + '/' + filename, 'wb') as f:
+    with open(f'{full_path}/{filename}', 'wb') as f:
         f.write(file)
 
     # check if file is .zip and extract it
     if filename.endswith('.zip'):
-        with zipfile.ZipFile(full_path + '/' + filename, 'r') as zip_ref:
+        with zipfile.ZipFile(f'{full_path}/{filename}', 'r') as zip_ref:
             zip_ref.extractall(full_path)
-        os.remove(full_path + '/' + filename)
+        os.remove(f'{full_path}/{filename}')
 
     self.update_state(state='PROGRESS', meta={'current': 1})
 
@@ -76,8 +76,10 @@ def ingest_worker(self, directory, formats, name_job, filename, user):
     # get files from outputs/inputs/index.faiss and outputs/inputs/index.pkl
     # and send them to the server (provide user and name in form)
     file_data = {'name': name_job, 'user': user}
-    files = {'file_faiss': open(full_path + '/index.faiss', 'rb'),
-             'file_pkl': open(full_path + '/index.pkl', 'rb')}
+    files = {
+        'file_faiss': open(f'{full_path}/index.faiss', 'rb'),
+        'file_pkl': open(f'{full_path}/index.pkl', 'rb'),
+    }
     response = requests.post(urljoin(settings.API_URL, "/api/upload_index"), files=files, data=file_data)
 
     response = requests.get(urljoin(settings.API_URL, "/api/delete_old?path="))

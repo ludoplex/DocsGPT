@@ -9,7 +9,7 @@ from parser.schema.base import Document
 def separate_header_and_body(text):
     header_pattern = r"^(.*?\n){3}"
     match = re.match(header_pattern, text)
-    header = match.group(0)
+    header = match[0]
     body = text[len(header):]
     return header, body
 
@@ -26,7 +26,7 @@ def group_documents(documents: List[Document], min_tokens: int, max_tokens: int)
                                      extra_info=doc.extra_info)
         elif len(tiktoken.get_encoding("cl100k_base").encode(
                 current_group.text)) + doc_len < max_tokens and doc_len >= min_tokens:
-            current_group.text += " " + doc.text
+            current_group.text += f" {doc.text}"
         else:
             docs.append(current_group)
             current_group = Document(text=doc.text, doc_id=doc.doc_id, embedding=doc.embedding,

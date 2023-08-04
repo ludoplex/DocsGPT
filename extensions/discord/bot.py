@@ -21,8 +21,7 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 def split_string(input_str):
     pattern = r'^<@!?{0}>\s*'.format(bot.user.id)
-    match = re.match(pattern, input_str)
-    if match:
+    if match := re.match(pattern, input_str):
         content = input_str[match.end():].strip()
         return str(bot.user.id), content
     return None, input_str
@@ -41,7 +40,9 @@ async def fetch_answer(question):
     }
     headers = {"Content-Type": "application/json",
                "Accept": "application/json"}
-    response = requests.post(BASE_API_URL + '/api/answer', json=data, headers=headers)
+    response = requests.post(
+        f'{BASE_API_URL}/api/answer', json=data, headers=headers
+    )
     if response.status_code == 200:
         return response.json()['answer']
     return 'Sorry, I could not fetch the answer.'
